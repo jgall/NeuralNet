@@ -7,7 +7,7 @@ public class Neuron {
 	private ArrayList<Connection> m_outputWeights = new ArrayList<Connection>();
 	private int m_myIndex;
 	private Double m_gradient = 0.0;
-	private Double eta = 0.15, alpha = 0.5; //both are between 0 and 1
+	private Double eta = 0.15, alpha = 0.2; //both are between 0 and 1
 	
 	Neuron(int numOutputs, int myIndex){
 		m_myIndex = myIndex;

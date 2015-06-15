@@ -1,4 +1,10 @@
+
+
 import java.util.ArrayList;
+import java.awt.*;
+import javax.swing.*;
+
+
 
 
 public class Main {
@@ -7,12 +13,19 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		//create window for visuals
+		MainFrame ex = new MainFrame();
+        ex.setVisible(true);
+            
 			System.out.println("test");
 			
 			ArrayList<Integer> topology = new ArrayList<Integer>();
 			ArrayList<Double> resultVals = new ArrayList<Double>();
 			topology.add(2);
+			topology.add(8);
+			topology.add(8);
+			topology.add(8);
+			topology.add(8);
 			topology.add(1);
 			
 			Net myNet = new Net(topology);
@@ -23,8 +36,16 @@ public class Main {
 			ArrayList<Double> targetVals = new ArrayList<Double>();
 			targetVals.add(0.0);
 			
+			//initial run
+			createXORData(inputVals, targetVals);
+			myNet.feedForward(inputVals);
+			myNet.backProp(targetVals);
+			myNet.getResults(resultVals);
 			
-			for(int i = 0; i < 1000000; i++) {
+			System.out.println(inputVals + " Result: " + resultVals.get(0) + " Target: " + targetVals);
+			
+			
+			for(int i = 0; i < 100000; i++) {
 				createXORData(inputVals, targetVals);
 				myNet.feedForward(inputVals);
 				myNet.backProp(targetVals);
