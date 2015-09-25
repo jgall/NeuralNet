@@ -27,7 +27,7 @@ public class Main {
         ArrayList<Double> resultVals = new ArrayList<Double>();
         topology.add(8);
         topology.add(12);
-        topology.add(16);
+        topology.add(12);
         topology.add(4);
 
         Net myNet = new Net(topology);
@@ -60,6 +60,8 @@ public class Main {
         System.out.println(inputVals + " Result: " + resultVals + " Target: " + targetVals);
         System.out.println("Training Neural Network...");
 
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/200);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
         percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/100);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
         percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/50);
