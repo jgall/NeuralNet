@@ -1,5 +1,11 @@
 
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
@@ -13,7 +19,6 @@ public class Main {
 
 
         System.out.println("test");
-
 
 
         ArrayList<Integer> topology = new ArrayList<Integer>();
@@ -57,7 +62,7 @@ public class Main {
             myNet.backProp(targetVals);
             myNet.getResults(resultVals);
             for (int j = 0; j < resultVals.size(); j++) {
-                resultVals.set(j, (double) Math.round( resultVals.get(j)));
+                resultVals.set(j, (double) Math.round(resultVals.get(j)));
             }
             System.out.print(inputVals + " Result: " + resultVals + " Target: " + targetVals);
             if (targetVals.get(0).equals(resultVals.get(0)) && targetVals.get(1).equals(resultVals.get(1))
@@ -68,20 +73,31 @@ public class Main {
             }
         }
 
-        for (int i = 0; i < myNet.getLayers().size(); i++) {
-            for (int n = 0; n < myNet.getLayers().get(i).getSize(); n++) {
-                for (int j = 0; j < myNet.getLayers().get(i).getNeuron(n).getOutputWeights().size(); j++) {
-                    System.out.println(myNet.getLayers().get(i).getNeuron(n).getOutputWeights().get(j).getWeight());
+        BufferedWriter writer = null;
+        try {
+            writer = Files.newBufferedWriter(Paths.get("saved-network.txt"), StandardCharsets.UTF_8);
+            writer.write("4 Bit Binary Addition Neural Network");
+            writer.newLine();
+            for (int i = 0; i < myNet.getLayers().size(); i++) {
+                for (int n = 0; n < myNet.getLayers().get(i).getSize(); n++) {
+                    for (int j = 0; j < myNet.getLayers().get(i).getNeuron(n).getOutputWeights().size(); j++) {
+                        System.out.println("Layer: " + i + " Neuron: " + n + " Output: " + j + " Connection weight: " + myNet.getLayers().get(i).getNeuron(n).getOutputWeights().get(j).getWeight());
+                        writer.write("Layer: " + i + " Neuron: " + n + " Output: " + j + " Connection weight: " + myNet.getLayers().get(i).getNeuron(n).getOutputWeights().get(j).getWeight());
+                        writer.newLine();
+                    }
                 }
             }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public static void createBinaryData(ArrayList<Double> inputVals, ArrayList<Double> outputVals, int index) {
 
-        int inputInt1 = (int) (Math.random()*7);
+        int inputInt1 = (int) (Math.random() * 7);
         String input1 = Integer.toBinaryString(inputInt1);
-        int inputInt2 = (int) (Math.random()*7);
+        int inputInt2 = (int) (Math.random() * 7);
         String input2 = Integer.toBinaryString(inputInt2);
         int outputInt = inputInt1 + inputInt2;
         String output = Integer.toBinaryString(outputInt);
@@ -102,14 +118,14 @@ public class Main {
             }
         }
         for (int i = 0; i < 4; i++) {
-                inputVals.set(i, (double) (int) input1.charAt(i) - 48);
+            inputVals.set(i, (double) (int) input1.charAt(i) - 48);
         }
         for (int i = 4; i < 8; i++) {
-                inputVals.set(i, (double) (int) input2.charAt(i - 4) - 48);
+            inputVals.set(i, (double) (int) input2.charAt(i - 4) - 48);
 
         }
         for (int i = 0; i < 4; i++) {
-                outputVals.set(i, (double) (int) output.charAt(i) - 48);
+            outputVals.set(i, (double) (int) output.charAt(i) - 48);
         }
     }
 
