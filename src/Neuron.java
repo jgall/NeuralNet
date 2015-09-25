@@ -104,5 +104,7 @@ public class Neuron {
 		return sum;
 	}
 	
-	
+	public void setIndex(int index) {
+		m_myIndex = index;
+	}
 }

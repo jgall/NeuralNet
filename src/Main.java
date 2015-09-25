@@ -26,8 +26,8 @@ public class Main {
         ArrayList<Integer> topology = new ArrayList<Integer>();
         ArrayList<Double> resultVals = new ArrayList<Double>();
         topology.add(8);
-        topology.add(8);
-        topology.add(8);
+        topology.add(12);
+        topology.add(16);
         topology.add(4);
 
         Net myNet = new Net(topology);
@@ -55,38 +55,74 @@ public class Main {
         myNet.backProp(targetVals);
         myNet.getResults(resultVals);
 
+        int percentageRight = 0;
+
         System.out.println(inputVals + " Result: " + resultVals + " Target: " + targetVals);
+        System.out.println("Training Neural Network...");
 
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/100);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/50);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/10);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
 
-        trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/2);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
+        pruneNetwork(myNet);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/2);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
+        pruneNetwork(myNet);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/2);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
+        pruneNetwork(myNet);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS);
+        System.out.println("the network has a " + percentageRight + "% accuracy...");
 
         writeOutNetwork(myNet, OUTPUT_FILE_PATH);
     }
 
-    public static void trainNetwork(Net network, ArrayList inputValues, ArrayList targetValues, int iterations) {
+    public static int trainNetwork(Net network, ArrayList inputValues, ArrayList targetValues, int iterations) {
+        int correctAnswers = 0;
         ArrayList<Double> resultVals = new ArrayList<Double>();
         for (int i = 0; i < iterations; i++) {
             createBinaryData(inputValues, targetValues, i);
             network.feedForward(inputValues);
             network.backProp(targetValues);
             network.getResults(resultVals);
-            if (i % 1000 == 0) {
+            if (true) {
                 for (int j = 0; j < resultVals.size(); j++) {
                     resultVals.set(j, (double) Math.round(resultVals.get(j)));
                 }
-                System.out.print(inputValues + " Result: " + resultVals + " Target: " + targetValues);
+                //System.out.print(inputValues + " Result: " + resultVals + " Target: " + targetValues);
                 if (targetValues.get(0).equals(resultVals.get(0)) && targetValues.get(1).equals(resultVals.get(1))
                         && targetValues.get(2).equals(resultVals.get(2)) && targetValues.get(3).equals(resultVals.get(3))) {
-                    System.out.println("Correct!");
-                } else {
-                    System.out.println("nope :(");
+                    correctAnswers++;
                 }
             }
         }
+        return ((correctAnswers + 1)*100)/iterations;
     }
 
     public static void pruneNetwork(Net network) {
-        
+        int neuronsPruned = 0;
+        ArrayList<Layer> layers = network.getLayers();
+        for (int i = 0; i < layers.size() - 1; i++) {
+            Layer layer = layers.get(i);
+            ArrayList<Neuron> neurons = layer.getNeurons();
+            for (int j = 0; j < neurons.size(); j++) {
+                Neuron neuron = neurons.get(j);
+                double weightMagnitude = 0;
+                for (Connection connection : neuron.getOutputWeights()) {
+                    weightMagnitude += Math.abs(connection.getWeight());
+                }
+                if (weightMagnitude < 0.1) {
+                    network.deleteNeuron(i, j);
+                    neuronsPruned++;
+                }
+            }
+        }
+        System.out.println("Network has been pruned by " + neuronsPruned + " neurons");
     }
 
     public static void writeOutNetwork(Net network, String outputPath) {
@@ -121,7 +157,7 @@ public class Main {
         int outputInt = inputInt1 + inputInt2;
         String output = Integer.toBinaryString(outputInt);
         if (index % 1000 == 0) {
-            System.out.println("input data: " + input1 + " + " + input2 + " = " + output);
+            //System.out.println("input data: " + input1 + " + " + input2 + " = " + output);
         }
         for (int i = 0; i < 4; i++) {
             if (input1.length() < 4) {
