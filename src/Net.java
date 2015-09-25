@@ -99,4 +99,9 @@ public class Net {
 		return mLayers;
 	}
 
+	public void deleteNeuron(int layerIndex, int neuronIndex) {
+		mLayers.get(layerIndex - 1).deleteConnectionsToNeuron(neuronIndex);
+		mLayers.get(layerIndex).deleteNeuron(neuronIndex);
+	}
+
 }

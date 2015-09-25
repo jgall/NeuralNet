@@ -17,6 +17,10 @@ public class Neuron {
 		}
 		
 	}
+
+	public void removeConnection(int index) {
+		m_outputWeights.remove(index);
+	}
 	
 	public void setOutputVal(Double val) {
 		m_outputVal = val;
