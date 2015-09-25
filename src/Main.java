@@ -12,11 +12,13 @@ public class Main {
     public static void main(String[] args) {
 
 
-
         System.out.println("test");
+
+
 
         ArrayList<Integer> topology = new ArrayList<Integer>();
         ArrayList<Double> resultVals = new ArrayList<Double>();
+        topology.add(8);
         topology.add(8);
         topology.add(8);
         topology.add(4);
@@ -41,20 +43,29 @@ public class Main {
         targetVals.add(0.0);
 
         //initial run
-        createBinaryData(inputVals, targetVals);
+        createBinaryData(inputVals, targetVals, 0);
         myNet.feedForward(inputVals);
         myNet.backProp(targetVals);
         myNet.getResults(resultVals);
 
-        System.out.println(inputVals + " Result: " + resultVals.get(0) + " Target: " + targetVals);
+        System.out.println(inputVals + " Result: " + resultVals + " Target: " + targetVals);
 
 
         for (int i = 0; i < 100000; i++) {
-            createBinaryData(inputVals, targetVals);
+            createBinaryData(inputVals, targetVals, i);
             myNet.feedForward(inputVals);
             myNet.backProp(targetVals);
             myNet.getResults(resultVals);
-            //System.out.println(inputVals + " Result: " + resultVals.get(0) + " Target: " + targetVals);
+            for (int j = 0; j < resultVals.size(); j++) {
+                resultVals.set(j, (double) Math.round( resultVals.get(j)));
+            }
+            System.out.print(inputVals + " Result: " + resultVals + " Target: " + targetVals);
+            if (targetVals.get(0).equals(resultVals.get(0)) && targetVals.get(1).equals(resultVals.get(1))
+                    && targetVals.get(2).equals(resultVals.get(2)) && targetVals.get(3).equals(resultVals.get(3))) {
+                System.out.println("Correct!");
+            } else {
+                System.out.println("nope :(");
+            }
         }
 
         for (int i = 0; i < myNet.getLayers().size(); i++) {
@@ -66,15 +77,40 @@ public class Main {
         }
     }
 
-    public static void createBinaryData(ArrayList<Double> inputVals, ArrayList<Double> outputVals) {
+    public static void createBinaryData(ArrayList<Double> inputVals, ArrayList<Double> outputVals, int index) {
 
-        Double random1 = Math.random();
-        random1 = random1 / 2;
-        Double random2 = Math.random();
-        random2 = random2 / 2;
-        inputVals.set(0, random1);
-        inputVals.set(1, random2);
-        outputVals.set(0, random1 + random2);
+        int inputInt1 = (int) (Math.random()*7);
+        String input1 = Integer.toBinaryString(inputInt1);
+        int inputInt2 = (int) (Math.random()*7);
+        String input2 = Integer.toBinaryString(inputInt2);
+        int outputInt = inputInt1 + inputInt2;
+        String output = Integer.toBinaryString(outputInt);
+        System.out.println("input data: " + input1 + " + " + input2 + " = " + output);
+        for (int i = 0; i < 4; i++) {
+            if (input1.length() < 4) {
+                input1 = "0" + input1;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            if (input2.length() < 4) {
+                input2 = "0" + input2;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            if (output.length() < 4) {
+                output = "0" + output;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+                inputVals.set(i, (double) (int) input1.charAt(i) - 48);
+        }
+        for (int i = 4; i < 8; i++) {
+                inputVals.set(i, (double) (int) input2.charAt(i - 4) - 48);
+
+        }
+        for (int i = 0; i < 4; i++) {
+                outputVals.set(i, (double) (int) output.charAt(i) - 48);
+        }
     }
 
 
