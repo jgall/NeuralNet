@@ -1,8 +1,6 @@
 
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -133,6 +131,11 @@ public class Main {
             writer = Files.newBufferedWriter(Paths.get(outputPath), StandardCharsets.UTF_8);
             writer.write("4 Bit Binary Addition Neural Network");
             writer.newLine();
+            writer.write("Network Layer Topology: " + (network.getLayers().get(0).getSize() - 1));
+            for (int i = 1; i < network.getLayers().size(); i++) {
+                writer.write("x" + (network.getLayers().get(i).getSize()-1));
+            }
+            writer.newLine();
             for (int i = 0; i < network.getLayers().size(); i++) {
                 for (int n = 0; n < network.getLayers().get(i).getSize(); n++) {
                     for (int j = 0; j < network.getLayers().get(i).getNeuron(n).getOutputWeights().size(); j++) {
@@ -186,6 +189,23 @@ public class Main {
         for (int i = 0; i < 4; i++) {
             outputVals.set(i, (double) (int) output.charAt(i) - 48);
         }
+    }
+
+    //TODO make this work
+    public Net loadNetwork(String filePath) throws FileNotFoundException {
+        Net network = new Net(null);
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)));
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if(line.startsWith("Layer")) {
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return network;
     }
 
 
