@@ -1,5 +1,3 @@
-
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,6 +18,8 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println("Beginning Main Thread");
+
+        //loadNetwork(OUTPUT_FILE_PATH);
 
         ArrayList<Integer> topology = new ArrayList<Integer>();
         ArrayList<Double> resultVals = new ArrayList<Double>();
@@ -58,28 +58,51 @@ public class Main {
         System.out.println(inputVals + " Result: " + resultVals + " Target: " + targetVals);
         System.out.println("Training Neural Network...");
 
-        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/200);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS / 200);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
-        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/100);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS / 100);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
-        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/50);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS / 50);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
-        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/10);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS / 10);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
 
-        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/2);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS / 2);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
         pruneNetwork(myNet);
-        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/2);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS / 2);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
         pruneNetwork(myNet);
-        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS/2);
+        percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS / 2);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
         pruneNetwork(myNet);
         percentageRight = trainNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS);
         System.out.println("the network has a " + percentageRight + "% accuracy...");
+        percentageRight = testNetwork(myNet, inputVals, targetVals, TRAINING_ITERATIONS);
+        System.out.println("final network has a " + percentageRight + "% accuracy...");
 
         writeOutNetwork(myNet, OUTPUT_FILE_PATH);
+    }
+
+    public static int testNetwork(Net network, ArrayList inputValues, ArrayList targetValues, int iterations) {
+        int correctAnswers = 0;
+        ArrayList<Double> resultVals = new ArrayList<Double>();
+        for (int i = 0; i < iterations; i++) {
+            createBinaryData(inputValues, targetValues, i);
+            network.feedForward(inputValues);
+            network.getResults(resultVals);
+            if (true) {
+                for (int j = 0; j < resultVals.size(); j++) {
+                    resultVals.set(j, (double) Math.round(resultVals.get(j)));
+                }
+                //System.out.print(inputValues + " Result: " + resultVals + " Target: " + targetValues);
+                if (targetValues.get(0).equals(resultVals.get(0)) && targetValues.get(1).equals(resultVals.get(1))
+                        && targetValues.get(2).equals(resultVals.get(2)) && targetValues.get(3).equals(resultVals.get(3))) {
+                    correctAnswers++;
+                }
+            }
+        }
+        return ((correctAnswers + 1) * 100) / iterations;
     }
 
     public static int trainNetwork(Net network, ArrayList inputValues, ArrayList targetValues, int iterations) {
@@ -101,7 +124,7 @@ public class Main {
                 }
             }
         }
-        return ((correctAnswers + 1)*100)/iterations;
+        return ((correctAnswers + 1) * 100) / iterations;
     }
 
     public static void pruneNetwork(Net network) {
@@ -133,7 +156,7 @@ public class Main {
             writer.newLine();
             writer.write("Network Layer Topology: " + (network.getLayers().get(0).getSize() - 1));
             for (int i = 1; i < network.getLayers().size(); i++) {
-                writer.write("x" + (network.getLayers().get(i).getSize()-1));
+                writer.write("x" + (network.getLayers().get(i).getSize() - 1));
             }
             writer.newLine();
             for (int i = 0; i < network.getLayers().size(); i++) {
@@ -192,22 +215,31 @@ public class Main {
     }
 
     //TODO make this work
-    public Net loadNetwork(String filePath) throws FileNotFoundException {
-        Net network = new Net(null);
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)));
+    public static Net loadNetwork(String filePath) {
+        ArrayList<Double> weights = new ArrayList<>();
+        BufferedReader br = null;
         try {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if(line.startsWith("Layer")) {
-
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)));
+            try {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith("Layer")) {
+                        int weightIndex = line.indexOf("Connection weight: ");
+                        String weightString = line.substring(weightIndex + "Connection weight: ".length());
+                        double weight = Double.parseDouble(weightString);
+                        weights.add(weight);
+                    }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        System.out.println("Weights: " + weights);
+        Net network = new Net(null);
         return network;
     }
-
 
 }
 
